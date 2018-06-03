@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ChucklesAndroid</string>
+    <string name="title_home">Chat</string>
+    <string name="title_dashboard">About</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="UnacceptableHugs">I can\'t believe I hugged all those people.</string>
+    <string name="ChucklesButton">Talk to Me, Chuckles!</string>
+</resources>
