@@ -37,11 +37,13 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="51dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="callWebService"
         android:text="@string/ChucklesButton"
+        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintRight_toRightOf="parent" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

@@ -1,11 +1,14 @@
 package chuckles.jonathanfries.com.chucklesandroid;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
-    protected void callWebService() {
+    public void callWebService(View view) {
         pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Please wait while retrieving the weather condition ...");
+        pDialog.setMessage("Hold your horses, Jeffrey.");
         pDialog.setCancelable(false);
 
         // Check if Internet is working
@@ -80,43 +84,9 @@ public class MainActivity extends AppCompatActivity {
                         // response will be a json object
 
 
-                        jsonObj = (JSONObject) response.getJSONArray("weather").get(0);
+                        //jsonObj = (JSONObject) response.[0];
                         // display weather description into the "description textview"
-                        description.setText(jsonObj.getString("description"));
-                        // display the temperature
-                        temperature.setText(response.getJSONObject("main").getString("temp") + " °C");
-
-                        String backgroundImage = "";
-
-                        //choose the image to set as background according to weather condition
-                        if (jsonObj.getString("main").equals("Clouds")) {
-                            backgroundImage = "https://marwendoukh.files.wordpress.com/2017/01/clouds-wallpaper2.jpg";
-                        } else if (jsonObj.getString("main").equals("Rain")) {
-                            backgroundImage = "https://marwendoukh.files.wordpress.com/2017/01/rainy-wallpaper1.jpg";
-                        } else if (jsonObj.getString("main").equals("Snow")) {
-                            backgroundImage = "https://marwendoukh.files.wordpress.com/2017/01/snow-wallpaper1.jpg";
-                        }
-
-                        // load image from link and display it on background
-                        // We'll use the Glide library
-                        Glide
-                                .with(getApplicationContext())
-                                .load(backgroundImage)
-                                .centerCrop()
-                                .crossFade()
-                                .listener(new RequestListener<String, GlideDrawable>() {
-                                    @Override
-                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                        System.out.println(e.toString());
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                        return false;
-                                    }
-                                })
-                                .into(weatherBackground);
+                        mTextMessage.setText(response.getString("displayText"));
 
                         // hide the loading Dialog
                         pDialog.dismiss();
@@ -147,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
             // Adding request to request queue
             AppController.getInstance(this).addToRequestQueue(jsonObjReq);
         }
+    }
 
         ////////////////////check internet connection
 
@@ -156,5 +127,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-}
+
 
