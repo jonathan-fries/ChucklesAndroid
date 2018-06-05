@@ -5,4 +5,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="UnacceptableHugs">I can\'t believe I hugged all those people.</string>
     <string name="ChucklesButton">Talk to Me, Chuckles!</string>
+    <string name="title_activity_about">AboutActivity</string>
 </resources>

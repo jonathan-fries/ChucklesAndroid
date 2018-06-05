@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="chuckles.jonathanfries.com.chucklesandroid">
 
-    <!--Request Internet connection-->
+    <!-- Request Internet connection -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--Request to check Internet connection state-->
+    <!-- Request to check Internet connection state -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
@@ -23,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AboutActivity"></activity>
     </application>
 
 </manifest>
