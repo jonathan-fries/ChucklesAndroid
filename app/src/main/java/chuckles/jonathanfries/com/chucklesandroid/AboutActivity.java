@@ -1,9 +1,11 @@
 package chuckles.jonathanfries.com.chucklesandroid;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.contentful.java.cda.CDAArray;
@@ -99,6 +101,11 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         messageView = (TextView) findViewById(R.id.mainTextView);
+    }
+
+    public void shutIt(View view)
+    {
+          this.finish();
     }
 
     /**

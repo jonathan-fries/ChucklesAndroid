@@ -10,6 +10,7 @@
         android:id="@+id/button3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="shutIt"
         android:text="Go Away, Dad."
         app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
 
@@ -26,8 +27,7 @@
             <TextView
                 android:id="@+id/mainTextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Stop it, Jeffrey." />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
