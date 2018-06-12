@@ -10,9 +10,12 @@
         android:id="@+id/button3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:onClick="shutIt"
         android:text="Go Away, Dad."
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -27,7 +30,9 @@
             <TextView
                 android:id="@+id/mainTextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"/>
 
         </LinearLayout>
 

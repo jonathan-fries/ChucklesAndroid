@@ -101,6 +101,7 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         messageView = (TextView) findViewById(R.id.mainTextView);
+        messageView.setText("");
     }
 
     public void shutIt(View view)

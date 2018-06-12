@@ -40,11 +40,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText("Cake is not a bear.");
-                    return true;
                 case R.id.navigation_dashboard:
-                    mTextMessage.setText("Crumptastic old bears have never been cake or cakey.");
+                    mTextMessage.setText("I don't like your enthusiasm.");
                     aboutStart();
                     return true;
             }

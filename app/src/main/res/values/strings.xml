@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ChucklesAndroid</string>
+    <string name="app_name">Chuckles</string>
     <string name="title_home">Chat</string>
     <string name="title_dashboard">About</string>
     <string name="title_notifications">Notifications</string>
