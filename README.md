@@ -1,5 +1,9 @@
 # ChucklesAndroid
-Repo for chuckles android code.
+
 This is the code for the Chuckles Android app.
 
-Current state as of 6/4/2018 - not published on store.  When it is published I will update this read me.
+Current state as of 6/18/2018 - published version 1.1.  
+
+You can download it here: 
+
+https://play.google.com/store/apps/details?id=chuckles.jonathanfries.com.chucklesandroid
