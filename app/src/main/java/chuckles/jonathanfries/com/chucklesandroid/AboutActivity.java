@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.contentful.java.cda.CDAArray;
@@ -79,7 +80,8 @@ public class AboutActivity extends AppCompatActivity {
     /*
      * This variable will store the view to put the result messages into.
      */
-    private TextView messageView;
+    private WebView messageView;
+    private StringBuilder messageBuilder;
 
     /*
      * This private variable will be used for formatting the output. It will be set to
@@ -100,8 +102,9 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        messageView = (TextView) findViewById(R.id.mainTextView);
-        messageView.setText("");
+        messageBuilder = new StringBuilder();
+        messageView = (WebView) findViewById(R.id.mainWebView);
+        messageView.loadData(messageBuilder.toString(), "text/html; charset=utf-8", "UTF-8");
     }
 
     public void shutIt(View view)
@@ -165,7 +168,7 @@ public class AboutActivity extends AppCompatActivity {
                             for (final String key : entry.rawFields().keySet()) {
                                 entryDescriptions.add("<b>" + key + "</b> = " + ellipsize(entry.getField(key).toString()));
                             }
-                            entryDescriptions.add("<br/>");
+                            //entryDescriptions.add("<br/>");
                         }
 
                         //JF
@@ -196,7 +199,8 @@ public class AboutActivity extends AppCompatActivity {
                                             //entryDescriptions.add(String.format("%s of <b>%s</b>", entry.id(), entry.contentType().id()));
 
                                             for (final String key : entry.rawFields().keySet()) {
-                                                entryDescriptions.add("</b></b>" + entry.getField(key));
+
+                                                entryDescriptions.add("</br></br>" + entry.getField(key));
                                             }
                                         }
                                         info("Chuckles!", entryDescriptions);
@@ -219,14 +223,23 @@ public class AboutActivity extends AppCompatActivity {
     private void info(String title, List<String> descriptions) {
         Log.d("HELLO CONTENTFUL", Html.fromHtml(title).toString() + ":" + Html.fromHtml(descriptions.toString()).toString());
 
-        messageView.append(Html.fromHtml(limiter));
-        limiter = "<br/><br/>";
-        messageView.append(Html.fromHtml("<h1>" + title + "</h1><br/>"));
+        //messageView.append(Html.fromHtml(limiter));
+        //messageBuilder.append(Html.fromHtml(limiter));
+        //limiter = "<br/><br/>";
+        //messageView.append(Html.fromHtml("<h1>" + title + "</h1><br/>"));
+        //messageBuilder.append(Html.fromHtml("<h1>" + title + "</h1><br/>"));
 
-        for (final String description : descriptions) {
-            messageView.append(Html.fromHtml(description));
+        messageBuilder.append(descriptions.get(0));
+
+        //for (final String description : descriptions) {
+            //messageView.append(Html.fromHtml(description));
+            //messageBuilder.append(Html.fromHtml(description));
             //messageView.append(Html.fromHtml("<br/>"));
-        }
+        //}
+
+        //messageView.setText("");
+        //messageView.setText(messageBuilder.toString());
+        messageView.loadData(messageBuilder.toString(), "text/html; charset=utf-8", "UTF-8");
     }
 
     /**
