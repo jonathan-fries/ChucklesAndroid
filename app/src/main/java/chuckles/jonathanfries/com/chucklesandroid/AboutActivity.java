@@ -1,6 +1,9 @@
 package chuckles.jonathanfries.com.chucklesandroid;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -8,12 +11,23 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.contentful.java.cda.CDAArray;
 import com.contentful.java.cda.CDAClient;
 import com.contentful.java.cda.CDAEntry;
 import com.contentful.java.cda.CDAResource;
 import com.contentful.java.cda.CDASpace;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,37 +59,8 @@ import rx.schedulers.Schedulers;
  */
 public class AboutActivity extends AppCompatActivity {
 
-    /**
-     * Token to communicate with the <b>c</b>ontent <b>d</b>elivery <b>a</b>pi.
-     * Please use the WebApp to find your token, if it is not present here.
-     *
-     * @see <a href="http://app.contentful.com">WebApp</a>
-     */
-    private static final String CDA_TOKEN = "445cd1547e7b23312b00e9bb242a77da85d545cff70b211d05374084e09dbe2f";
-
-    /**
-     * Space <b>id</b>entifier.
-     * <p>
-     * This identifier is used to know which space you want to request items from. Please also use the
-     * WebApp, if this value is not set.
-     *
-     * @see <a href="http://app.contentful.com">WebApp</a>
-     */
-    private static final String SPACE_ID = "jk4dnk7cynhq";
-
-    /*
-     * Create the client
-     *
-     * This client will abstract the communication to Contentful. Use it to make your requests to
-     * Contentful.
-     *
-     * For initialization it needs the {@link #CDA_TOKEN} and {@link #SPACE_ID} from above.
-     */
-    private final CDAClient client = CDAClient
-            .builder()
-            .setToken(CDA_TOKEN)
-            .setSpace(SPACE_ID)
-            .build();
+    //URL for retrieving the intro text.
+    private static final String introUrl = "https://cdn.contentful.com/spaces/jk4dnk7cynhq/entries/4jkedoxufKUyoC4mQyqSCY?access_token=445cd1547e7b23312b00e9bb242a77da85d545cff70b211d05374084e09dbe2f";
 
     /*
      * This variable will store the view to put the result messages into.
@@ -83,12 +68,15 @@ public class AboutActivity extends AppCompatActivity {
     private WebView messageView;
     private StringBuilder messageBuilder;
 
+    //the loading Dialog
+    ProgressDialog pDialog;
+
     /*
      * This private variable will be used for formatting the output. It will be set to
      * an empty string to annotate, that it should not have a topmost border. As soon
      * as something gets outputted, this limiter will be set to a border.
      */
-    private String limiter = "";
+
 
     /**
      * Creates this activity.
@@ -119,95 +107,63 @@ public class AboutActivity extends AppCompatActivity {
      * time for us to start talking to contentful.
      */
     @Override protected void onResume() {
-    /*
-     * After you created your client, let us retrieve the space we'll be using in this sample. The
-     * following request will be executed asynchronously, since Android does not allow networking
-     * on the main ui thread.
-     */
-        client
-                .observeSpace()
-                .observeOn(AndroidSchedulers.mainThread()) // run code in the following action on main thread
-                .subscribeOn(Schedulers.io()) // run all other code (fetching, internet, etc) on different thread
-                .subscribe(new Action1<CDASpace>() {
-                    @Override public void call(CDASpace space) {
-            /*
-             * Now that we have a space, we can find out the name of it. Thankfully the Contentful SDK has
-             * already created an object based on the response from the Contentful API: A {@see CDASpace}.
-             * This object does not contain all the entries of this space, it just allows us to retrieve the
-             * general information of the space. Let us print the name we set in the WebApp of this space to
-             * the command line.
-             */
-                        //JF
-                        //info("Fetched Space", Collections.singletonList("name: <b>" + space.name() + "</b>"));
+
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Hold your horses, Jeffrey.");
+        pDialog.setCancelable(false);
+
+        // Check if Internet is working
+        if (!isNetworkAvailable(this)) {
+            // Show a message to the user to check his Internet
+            Toast.makeText(this, "Please check your Internet connection", Toast.LENGTH_LONG).show();
+        } else {
+
+            pDialog.show();
+
+            // make HTTP request to retrieve the weather
+            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                    introUrl, null, new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        // Parsing json object response
+                        // response will be a json object
+
+                        // display weather description into the "description textview"
+
+                        messageBuilder.append(response.getJSONObject("fields").getString("introText"));
+                        messageView.loadData(messageBuilder.toString(), "text/html; charset=utf-8", "UTF-8");
+
+                        // hide the loading Dialog
+                        pDialog.dismiss();
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Error , try again ! ", Toast.LENGTH_LONG).show();
+                        pDialog.dismiss();
+
                     }
-                });
 
-    /*
-     * Since we are actually more interested in the contents of the space, let us fetch all entries
-     * of this space. The following statement will fetch all {@code Entries} of the space. We could
-     * also fetch all {@see CDAAssets} and all {@see CDAContentTypes} of this space, by simply
-     * exchanging the given CDAEntry class with the wanted one.
-     */
-        client
-                .observe(CDAEntry.class)
-                .all()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<CDAArray>() {
-                    @Override public void call(CDAArray entries) {
-            /*
-             * The following snipped will toast out the id and type of all entries requested.
-             */
-                        final List<String> entryDescriptions = new ArrayList<>();
-                        for (final CDAResource resource : entries.items()) {
-                            // We are sure that all resources returned are a CDAEntry, since we specified it in the fetch
-                            // so we can directly cast it to an entry.
-                            final CDAEntry entry = (CDAEntry) resource;
-                            entryDescriptions.add(entry.id() + " of <b>" + entry.contentType().id() + "</b> with ");
 
-                            for (final String key : entry.rawFields().keySet()) {
-                                entryDescriptions.add("<b>" + key + "</b> = " + ellipsize(entry.getField(key).toString()));
-                            }
-                            //entryDescriptions.add("<br/>");
-                        }
+                }
 
-                        //JF
-                        //info("All Entries", entryDescriptions);
-                        entryDescriptions.clear();
 
-            /*
-             * The last thing we want to show with this app, is how to filter all of entries in a space, so
-             * that we only return entries of a given type. Therefore we'll just get the type of the first
-             * entry we requested above, and ask Contentful to return us all entries of this type,
-             * printing the first field of it.
-             */
-                        final String contentTypeId = (String) ((CDAEntry) entries.items().get(0)).contentType()
-                                .attrs()
-                                .get("id");
+            }, new Response.ErrorListener() {
 
-                        client
-                                .observe(CDAEntry.class)
-                                .where("content_type", contentTypeId)
-                                .all()
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(new Action1<CDAArray>() {
-                                    @Override public void call(CDAArray entries) {
-                                        final List<String> entryDescriptions = new ArrayList<>();
-                                        for (final CDAResource resource : entries.items()) {
-                                            final CDAEntry entry = (CDAEntry) resource;
-                                            //entryDescriptions.add(String.format("%s of <b>%s</b>", entry.id(), entry.contentType().id()));
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("tag", "Error: " + error.getMessage());
+                    Toast.makeText(getApplicationContext(), "Error while loading ... ", Toast.LENGTH_SHORT).show();
+                    // hide the progress dialog
+                    pDialog.dismiss();
+                }
+            });
 
-                                            for (final String key : entry.rawFields().keySet()) {
-
-                                                entryDescriptions.add("</br></br>" + entry.getField(key));
-                                            }
-                                        }
-                                        info("Chuckles!", entryDescriptions);
-                                    }
-                                });
-                    }
-                });
+            // Adding request to request queue
+            AppController.getInstance(this).addToRequestQueue(jsonObjReq);
+        }
 
     /*
      * And we are done. Please feel free to stick around, change some code to see how it works, or
@@ -217,41 +173,9 @@ public class AboutActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    /**
-     * This internal method will be used to print out messages on the logger and on screen.
-     */
-    private void info(String title, List<String> descriptions) {
-        Log.d("HELLO CONTENTFUL", Html.fromHtml(title).toString() + ":" + Html.fromHtml(descriptions.toString()).toString());
-
-        //messageView.append(Html.fromHtml(limiter));
-        //messageBuilder.append(Html.fromHtml(limiter));
-        //limiter = "<br/><br/>";
-        //messageView.append(Html.fromHtml("<h1>" + title + "</h1><br/>"));
-        //messageBuilder.append(Html.fromHtml("<h1>" + title + "</h1><br/>"));
-
-        messageBuilder.append(descriptions.get(0));
-
-        //for (final String description : descriptions) {
-            //messageView.append(Html.fromHtml(description));
-            //messageBuilder.append(Html.fromHtml(description));
-            //messageView.append(Html.fromHtml("<br/>"));
-        //}
-
-        //messageView.setText("");
-        //messageView.setText(messageBuilder.toString());
-        messageView.loadData(messageBuilder.toString(), "text/html; charset=utf-8", "UTF-8");
+    public boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
-    /**
-     * An internal method to reduce the size of the given text to a maximum. Every text longer
-     * will be cut, every text short will stay the same.
-     */
-    public static String ellipsize(String input) {
-        final int MAX = 20;
-        if (input.length() <= MAX) {
-            return input;
-        } else {
-            return input.substring(0, MAX - 1) + "…";
-        }
-    }
 }

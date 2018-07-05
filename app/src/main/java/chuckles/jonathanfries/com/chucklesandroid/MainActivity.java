@@ -82,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
                         // Parsing json object response
                         // response will be a json object
 
-
-                        //jsonObj = (JSONObject) response.[0];
                         // display weather description into the "description textview"
                         mTextMessage.setText(response.getString("displayText"));
 
